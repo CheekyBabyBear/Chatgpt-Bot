@@ -10,7 +10,7 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 # DO NOT place your actual token or channel ID here.
 # These will be set as secure environment variables on Railway.
 BOT_TOKEN = 'PLACEHOLDER'
-PROGRESS_CHANNEL_ID = 1404825388827283497 
+PROGRESS_CHANNEL_ID = 'not tricking me' 
 # ---------------------
 
 # Event listener for when the bot successfully connects to Discord
@@ -55,4 +55,5 @@ async def task(ctx, collaborator: discord.Member, *, task_details: str):
 
 # Run the bot with your token
 bot.run(BOT_TOKEN)
+
 
