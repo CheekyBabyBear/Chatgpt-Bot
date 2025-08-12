@@ -18,7 +18,9 @@ if BOT_TOKEN is None:
 if PROGRESS_CHANNEL_ID is None:
     raise ValueError("PROGRESS_CHANNEL_ID environment variable not set.")
 # ---------------------
-
+# Temporary debug logging to verify environment variables
+print("Loaded BOT_TOKEN:", os.getenv('BOT_TOKEN'))
+print("Loaded PROGRESS_CHANNEL_ID:", os.getenv('PROGRESS_CHANNEL_ID'))
 @bot.event
 async def on_ready():
     print(f'Nexus Bot is ready. Logged in as {bot.user.name}')
@@ -47,3 +49,4 @@ async def task(ctx, collaborator: discord.Member, *, task_details: str):
 
 # Run the bot with the token from the environment variable
 bot.run(BOT_TOKEN)
+
