@@ -1,52 +1,45 @@
+import os
 import discord
 from discord.ext import commands
-import os
+import openai
 
-# Define bot intents and prefix
+# Load tokens from environment variables for safety
+DISCORD_TOKEN = os.getenv("DISCORD_TOKEN") or "MTQwNDgyMzI2OTk4NjUzMzUwNw.GQWTUI.fi8BO5xGidVYaC83YBiUYA85DHIHybXpHlliWw"
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") or "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"
+
+openai.api_key = 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
+
 intents = discord.Intents.default()
-intents.message_content = True
-bot = commands.Bot(command_prefix='!', intents=intents)
+intents.message_content = True  # Required to read message content
+bot = commands.Bot(command_prefix="!", intents=intents)
 
-# --- Configuration ---
-# Get the bot token and channel ID from environment variables
-BOT_TOKEN = os.getenv('BOT_TOKEN')
-PROGRESS_CHANNEL_ID = int(os.getenv('PROGRESS_CHANNEL_ID'))
-
-# Check if the token and channel ID are set
-if BOT_TOKEN is None:
-    raise ValueError("BOT_TOKEN environment variable not set.")
-if PROGRESS_CHANNEL_ID is None:
-    raise ValueError("PROGRESS_CHANNEL_ID environment variable not set.")
-# ---------------------
-# Temporary debug logging to verify environment variables
-print("Loaded BOT_TOKEN:", os.getenv('BOT_TOKEN'))
-print("Loaded PROGRESS_CHANNEL_ID:", os.getenv('PROGRESS_CHANNEL_ID'))
 @bot.event
 async def on_ready():
-    print(f'Nexus Bot is ready. Logged in as {bot.user.name}')
-    print('---')
+    print(f"✅ Bot connected as {bot.user}")
 
-@bot.command()
-async def ping(ctx):
-    await ctx.send(f'Pong! My latency is {round(bot.latency * 1000)}ms')
+@bot.event
+async def on_message(message):
+    if message.author.bot:
+        return  # Ignore other bots and self
 
-@bot.command()
-async def update(ctx, *, message: str):
-    progress_channel = bot.get_channel(PROGRESS_CHANNEL_ID)
-    if progress_channel:
-        formatted_message = f"**{ctx.author.name} Update:**\n{message}"
-        await progress_channel.send(formatted_message)
-        await ctx.send("Update sent!", delete_after=5)
-        await ctx.message.delete()
-    else:
-        await ctx.send("Error: Progress channel not found.")
+    # You can restrict it to certain channels or mentions if you want
 
-@bot.command()
-async def task(ctx, collaborator: discord.Member, *, task_details: str):
-    await collaborator.send(f"**Task Assigned:**\nAssigned by: {ctx.author.name}\nTask: {task_details}")
-    await ctx.send(f"Task assigned to {collaborator.mention}.")
-    await ctx.message.delete()
+    prompt = message.content
 
-# Run the bot with the token from the environment variable
-bot.run(BOT_TOKEN)
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-4o-mini",  # or "gpt-3.5-turbo"
+            messages=[
+                {"role": "system", "content": "You are a helpful Discord assistant."},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=150,
+            temperature=0.7,
+        )
+        reply = response.choices[0].message.content.strip()
+    except Exception as e:
+        reply = "Sorry, I couldn't process that."
 
+    await message.channel.send(reply)
+
+bot.run(DISCORD_TOKEN)
