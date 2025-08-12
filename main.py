@@ -3,11 +3,11 @@ import discord
 from discord.ext import commands
 import openai
 
-# Load tokens from environment variables for safety
-DISCORD_TOKEN = os.getenv("DISCORD_TOKEN") or "MTQwNDgyMzI2OTk4NjUzMzUwNw.GQWTUI.fi8BO5xGidVYaC83YBiUYA85DHIHybXpHlliWw"
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") or "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"
+# Load tokens from environment variables or placeholders
+DISCORD_TOKEN = os.getenv("DISCORD_TOKEN") or "PLACEHOLDER"
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") or "PLACEHOLDER"
 
-openai.api_key = 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
+openai.api_key = OPENAI_API_KEY
 
 intents = discord.Intents.default()
 intents.message_content = True  # Required to read message content
@@ -20,9 +20,7 @@ async def on_ready():
 @bot.event
 async def on_message(message):
     if message.author.bot:
-        return  # Ignore other bots and self
-
-    # You can restrict it to certain channels or mentions if you want
+        return  # Ignore bots including itself
 
     prompt = message.content
 
@@ -37,7 +35,7 @@ async def on_message(message):
             temperature=0.7,
         )
         reply = response.choices[0].message.content.strip()
-    except Exception as e:
+    except Exception:
         reply = "Sorry, I couldn't process that."
 
     await message.channel.send(reply)
